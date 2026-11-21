@@ -13,6 +13,7 @@ Route::get('/language/{locale}', [LanguageController::class, 'switch'])->name('l
 Route::get('/', [BhaktController::class, 'create'])->name('register');
 Route::post('/register', [BhaktController::class, 'store'])->name('register.store');
 Route::get('/register/success/{bhakt}', [BhaktController::class, 'success'])->name('register.success');
+Route::get('/register/receipt/{bhakt}', [BhaktController::class, 'receipt'])->name('register.receipt');
 Route::get('/status', [BhaktController::class, 'status'])->name('status');
 
 // Auth Routes

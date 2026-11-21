@@ -108,6 +108,12 @@ class BhaktController extends Controller
         return view('bhakt.success', compact('bhakt'));
     }
 
+    // Official printable receipt
+    public function receipt(Bhakt $bhakt)
+    {
+        return view('bhakt.receipt', compact('bhakt'));
+    }
+
     // Check application status (public)
     public function status(Request $request)
     {

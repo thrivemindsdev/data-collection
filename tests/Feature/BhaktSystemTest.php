@@ -182,4 +182,23 @@ class BhaktSystemTest extends TestCase
         $bVaranasi = new Bhakt(['branch' => 'Varanasi', 'diksha_taken' => false]);
         $this->assertStringStartsWith('SAD-VN', Bhakt::generateBhaktId($bVaranasi));
     }
+
+    public function test_printable_receipt_page_renders_successfully(): void
+    {
+        $bhakt = Bhakt::create([
+            'name' => 'Ananthu Devotee',
+            'mobile' => '9876501234',
+            'registration_number' => 'SAD-REG-2611-12345',
+            'branch' => 'Shivreinarayan',
+            'state' => 'Kerala',
+            'status' => 'pending',
+        ]);
+
+        $response = $this->get('/register/receipt/' . $bhakt->id);
+        $response->assertStatus(200);
+        $response->assertSee('SAD-REG-2611-12345');
+        $response->assertSee('Ananthu Devotee');
+        $response->assertSee('+91 9876501234');
+        $response->assertSee('Shivreinarayan');
+    }
 }

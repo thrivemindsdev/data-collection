@@ -240,17 +240,23 @@
                         <i class="bi bi-whatsapp me-1"></i>{{ __('messages.share_whatsapp') }}
                     </a>
 
-                    {{-- Save / Download Pass Receipt (Works on all mobile & desktop browsers) --}}
-                    <button type="button" class="btn btn-maroon shadow-sm" onclick="downloadPassReceipt();" id="downloadPassBtn">
-                        <i class="bi bi-file-earmark-arrow-down-fill me-1"></i>{{ __('messages.save_receipt') }}
+                    {{-- 1. Print / Save Receipt (Opens official printable receipt in new tab - 100% reliable on every phone & browser) --}}
+                    <a href="{{ route('register.receipt', $bhakt) }}" target="_blank" class="btn btn-maroon shadow-sm">
+                        <i class="bi bi-printer-fill me-1"></i>{{ __('messages.print_slip') }}
+                    </a>
+
+                    {{-- 2. Save Pass Image (Modal with direct save to photos / download) --}}
+                    <button type="button" class="btn btn-outline-secondary shadow-sm" onclick="showPassImageModal();">
+                        <i class="bi bi-image me-1"></i>{{ __('messages.save_receipt') }}
                     </button>
 
-                    {{-- Print Slip --}}
-                    <button type="button" class="btn btn-outline-secondary shadow-sm" onclick="handlePrintReceipt();">
-                        <i class="bi bi-printer me-1"></i>{{ __('messages.print_slip') }}
-                    </button>
+                    {{-- 3. Share WhatsApp --}}
+                    <a href="https://api.whatsapp.com/send?text={{ urlencode($shareText) }}"
+                       target="_blank" class="btn btn-success shadow-sm">
+                        <i class="bi bi-whatsapp me-1"></i>{{ __('messages.share_whatsapp') }}
+                    </a>
 
-                    {{-- Check Status Link --}}
+                    {{-- 4. Check Status Link --}}
                     <a href="{{ route('status', ['mobile' => $bhakt->mobile]) }}" class="btn btn-outline-dark shadow-sm">
                         <i class="bi bi-search me-1"></i>{{ __('messages.check_status_link') }}
                     </a>
@@ -260,6 +266,42 @@
                     <a href="{{ route('register') }}" class="text-muted small text-decoration-none">
                         <i class="bi bi-plus-circle me-1"></i>{{ __('messages.register_another') }}
                     </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- MODAL FOR SAVING PASS IMAGE (Mobile & Desktop friendly) --}}
+<div class="modal fade" id="passImageModal" tabindex="-1" aria-labelledby="passImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border: 2px solid var(--gold); border-radius: 14px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, var(--maroon), #5c1414); color: #fff;">
+                <h6 class="modal-title fw-bold" id="passImageModalLabel">
+                    <i class="bi bi-shield-check me-2 text-warning"></i>{{ __('messages.digital_pass_title') }}
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-3">
+                <p class="text-muted small mb-2">
+                    <i class="bi bi-info-circle me-1 text-primary"></i>
+                    <strong>Mobile:</strong> Tap and hold the image below, then choose <em>"Save to Photos"</em> or <em>"Save Image"</em>.
+                </p>
+                <div class="p-2 bg-light rounded border text-center mb-3">
+                    <img id="passModalImg" src="" alt="Pass Receipt" class="img-fluid rounded shadow-sm" style="max-height: 400px; display: none;">
+                    <div id="passImgSpinner" class="py-5">
+                        <div class="spinner-border text-warning" role="status"></div>
+                        <p class="small text-muted mt-2">Generating High-Resolution Pass...</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <a id="modalDownloadLink" href="#" download="Receipt_{{ $bhakt->display_reg_number }}.png" class="btn btn-success btn-sm">
+                        <i class="bi bi-download me-1"></i>Download PNG Image
+                    </a>
+                    <a href="{{ route('register.receipt', $bhakt) }}" target="_blank" class="btn btn-maroon btn-sm">
+                        <i class="bi bi-printer me-1"></i>Open Full Printable Slip
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -283,20 +325,20 @@ function copyRegId() {
     });
 }
 
-function handlePrintReceipt() {
-    try {
-        window.print();
-    } catch (e) {
-        downloadPassReceipt();
-    }
-}
+function showPassImageModal() {
+    var modalEl = document.getElementById('passImageModal');
+    if (!modalEl) return;
+    var modal = new bootstrap.Modal(modalEl);
+    modal.show();
 
-function downloadPassReceipt() {
-    var btn = document.getElementById('downloadPassBtn');
-    var origHtml = btn ? btn.innerHTML : '';
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>' + "{{ __('messages.saving') }}";
+    var img = document.getElementById('passModalImg');
+    var spinner = document.getElementById('passImgSpinner');
+    var downloadLink = document.getElementById('modalDownloadLink');
+
+    if (img.src && img.src.startsWith('data:image')) {
+        img.style.display = 'inline-block';
+        if (spinner) spinner.style.display = 'none';
+        return;
     }
 
     setTimeout(function() {
@@ -428,33 +470,17 @@ function downloadPassReceipt() {
             ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText(verified, 400, 480);
-            ctx.fillText("Status Tracking: " + window.location.origin + "/status", 400, 504);
 
-            // Convert to download
             var dataUrl = canvas.toDataURL('image/png');
-            var a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = 'Receipt_' + regNumber + '.png';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="bi bi-check2-circle me-1"></i>' + "{{ __('messages.downloaded') }}";
-                setTimeout(function() {
-                    btn.innerHTML = origHtml;
-                }, 3500);
-            }
-        } catch (e) {
-            console.error("Receipt generation error:", e);
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = origHtml;
-            }
-            window.print();
+            img.src = dataUrl;
+            img.style.display = 'inline-block';
+            if (spinner) spinner.style.display = 'none';
+            if (downloadLink) downloadLink.href = dataUrl;
+        } catch(e) {
+            console.error("Canvas error: ", e);
+            window.location.href = "{{ route('register.receipt', $bhakt) }}";
         }
-    }, 250);
+    }, 120);
 }
 
 function drawRoundRect(ctx, x, y, width, height, radius) {

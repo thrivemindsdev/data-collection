@@ -84,8 +84,9 @@ return [
     'copy_reg_id'           => 'नंबर कॉपी करें',
     'copied'                => 'कॉपी हो गया!',
     'share_whatsapp'        => 'WhatsApp पर शेयर / सेव करें',
-    'print_slip'            => 'प्रिंट करें',
-    'save_receipt'          => 'रसीद सेव / डाउनलोड करें',
+    'print_slip'            => 'रसीद प्रिंट / सेव करें',
+    'save_receipt'          => 'पास चित्र डाउनलोड करें',
+    'view_receipt'          => 'आधिकारिक पर्ची देखें',
     'saving'                => 'सेव हो रहा है...',
     'downloaded'            => 'डिवाइस में सेव हुआ!',
 
