@@ -45,6 +45,8 @@ return [
     'address'               => 'Full Address',
     'branch'                => 'Ashram Branch',
     'select_branch'         => '-- Select Branch --',
+    'specify_branch_name'        => 'Specify Ashram Branch Name',
+    'specify_branch_placeholder' => 'Enter branch name (e.g. Bilaspur Center)...',
     'diksha_taken'          => 'Have you taken Diksha?',
     'yes'                   => 'Yes',
     'no'                    => 'No',

@@ -45,6 +45,8 @@ return [
     'address'               => 'पूरा पता',
     'branch'                => 'आश्रम शाखा',
     'select_branch'         => '-- शाखा चुनें --',
+    'specify_branch_name'        => 'आश्रम शाखा का नाम दर्ज करें',
+    'specify_branch_placeholder' => 'शाखा का नाम लिखें (उदा. बिलासपुर केंद्र)...',
     'diksha_taken'          => 'क्या आपने दीक्षा ली है?',
     'yes'                   => 'हाँ',
     'no'                    => 'नहीं',

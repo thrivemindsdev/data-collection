@@ -76,6 +76,14 @@ class Bhakt extends Model
                     $category = 'SN'; // Shivreinarayan
                 } elseif (str_contains($branchStr, 'vrind') || str_contains($branchStr, 'वृंदा')) {
                     $category = 'VR'; // Vrindavan
+                } elseif (str_contains($branchStr, 'raipur') || str_contains($branchStr, 'रायपुर')) {
+                    $category = 'RP'; // Raipur
+                } elseif (str_contains($branchStr, 'champa') || str_contains($branchStr, 'चांपा')) {
+                    $category = 'CH'; // Champa
+                } elseif (str_contains($branchStr, 'janjgir') || str_contains($branchStr, 'जांजगीर')) {
+                    $category = 'JG'; // Janjgir
+                } elseif (str_contains($branchStr, 'varanasi') || str_contains($branchStr, 'वाराणसी') || str_contains($branchStr, 'kashi')) {
+                    $category = 'VN'; // Varanasi
                 }
             }
         }

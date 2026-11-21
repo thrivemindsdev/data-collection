@@ -175,18 +175,40 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">{{ __('messages.branch') }}</label>
-                            <select name="branch" class="form-select">
+                            @php
+                                $branchesList = [
+                                    'Shivreinarayan' => 'शिवरीनारायण',
+                                    'Vrindavan'      => 'वृंदावन',
+                                    'Raipur'         => 'रायपुर',
+                                    'Champa'         => 'चांपा',
+                                    'Janjgir'        => 'जांजगीर',
+                                    'Varanasi'       => 'वाराणसी',
+                                    'Other'          => 'अन्य',
+                                ];
+                                $isHi = app()->getLocale() === 'hi';
+                                $oldBranch = old('branch');
+                                $isOtherSelected = ($oldBranch === 'Other' || old('other_branch'));
+                            @endphp
+                            <select name="branch" id="branchSelect" class="form-select" onchange="toggleOtherBranch(this.value)">
                                 <option value="">{{ __('messages.select_branch') }}</option>
-                                @if(app()->getLocale() === 'hi')
-                                    <option value="Shivreinarayan" {{ old('branch') === 'Shivreinarayan' ? 'selected' : '' }}>शिवरीनारायण</option>
-                                    <option value="Vrindavan"      {{ old('branch') === 'Vrindavan'      ? 'selected' : '' }}>वृंदावन</option>
-                                    <option value="Other Center"   {{ old('branch') === 'Other Center'   ? 'selected' : '' }}>अन्य केंद्र</option>
-                                @else
-                                    <option value="Shivreinarayan" {{ old('branch') === 'Shivreinarayan' ? 'selected' : '' }}>Shivreinarayan</option>
-                                    <option value="Vrindavan"      {{ old('branch') === 'Vrindavan'      ? 'selected' : '' }}>Vrindavan</option>
-                                    <option value="Other Center"   {{ old('branch') === 'Other Center'   ? 'selected' : '' }}>Other Center</option>
-                                @endif
+                                @foreach($branchesList as $en => $hi)
+                                    <option value="{{ $en }}" {{ ($oldBranch === $en || ($en === 'Other' && $isOtherSelected)) ? 'selected' : '' }}>
+                                        {{ $isHi ? $hi : $en }}
+                                    </option>
+                                @endforeach
                             </select>
+
+                            {{-- Specify custom branch name when "Other" is chosen --}}
+                            <div id="otherBranchGroup" class="mt-2" style="{{ $isOtherSelected ? '' : 'display:none;' }}">
+                                <label class="form-label small text-muted mb-1">
+                                    <i class="bi bi-geo-alt me-1" style="color:var(--saffron);"></i>{{ __('messages.specify_branch_name') }} <span class="req">*</span>
+                                </label>
+                                <input type="text" name="other_branch" id="otherBranchInput"
+                                       class="form-control form-control-sm"
+                                       value="{{ old('other_branch') }}"
+                                       placeholder="{{ __('messages.specify_branch_placeholder') }}"
+                                       maxlength="100">
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">{{ __('messages.seva') }}</label>
@@ -299,6 +321,20 @@ function toggleDiksha(show) {
     if (el) el.style.display = show ? '' : 'none';
 }
 
+function toggleOtherBranch(val) {
+    var group = document.getElementById('otherBranchGroup');
+    var input = document.getElementById('otherBranchInput');
+    if (!group || !input) return;
+
+    if (val === 'Other') {
+        group.style.display = 'block';
+        input.setAttribute('required', 'required');
+    } else {
+        group.style.display = 'none';
+        input.removeAttribute('required');
+    }
+}
+
 function sanitizeMobile(input) {
     // Strip everything except 0-9
     var cleaned = input.value.replace(/[^0-9]/g, '');
@@ -363,6 +399,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var checked = document.querySelector('input[name="diksha_taken"]:checked');
     if (checked) toggleDiksha(checked.value === '1');
+
+    var branchSelect = document.getElementById('branchSelect');
+    if (branchSelect) {
+        toggleOtherBranch(branchSelect.value);
+    }
 
     // Smooth & professional submission loading
     var regForm = document.getElementById('regForm');

@@ -137,4 +137,49 @@ class BhaktSystemTest extends TestCase
             'id' => $bhakt->id,
         ]);
     }
+
+    public function test_branch_selection_and_custom_other_branch(): void
+    {
+        // 1. Standard new branch: Raipur
+        $response = $this->post('/register', [
+            'name' => 'Devotee Raipur',
+            'mobile' => '9822334455',
+            'branch' => 'Raipur',
+            'consent' => '1',
+        ]);
+        $response->assertRedirect();
+        $this->assertDatabaseHas('bhakts', [
+            'mobile' => '9822334455',
+            'branch' => 'Raipur',
+        ]);
+
+        // 2. Custom "Other" branch specifying custom name
+        $responseOther = $this->post('/register', [
+            'name' => 'Devotee Custom',
+            'mobile' => '9811223344',
+            'branch' => 'Other',
+            'other_branch' => 'Bhilai Seva Kendra',
+            'consent' => '1',
+        ]);
+        $responseOther->assertRedirect();
+        $this->assertDatabaseHas('bhakts', [
+            'mobile' => '9811223344',
+            'branch' => 'Bhilai Seva Kendra',
+        ]);
+    }
+
+    public function test_branch_specific_bhakt_id_generation(): void
+    {
+        $bRaipur = new Bhakt(['branch' => 'Raipur', 'diksha_taken' => false]);
+        $this->assertStringStartsWith('SAD-RP', Bhakt::generateBhaktId($bRaipur));
+
+        $bChampa = new Bhakt(['branch' => 'Champa', 'diksha_taken' => false]);
+        $this->assertStringStartsWith('SAD-CH', Bhakt::generateBhaktId($bChampa));
+
+        $bJanjgir = new Bhakt(['branch' => 'Janjgir', 'diksha_taken' => false]);
+        $this->assertStringStartsWith('SAD-JG', Bhakt::generateBhaktId($bJanjgir));
+
+        $bVaranasi = new Bhakt(['branch' => 'Varanasi', 'diksha_taken' => false]);
+        $this->assertStringStartsWith('SAD-VN', Bhakt::generateBhaktId($bVaranasi));
+    }
 }

@@ -36,6 +36,7 @@ class BhaktController extends Controller
             'state'            => 'nullable|string|max:100',
             'address'          => 'nullable|string|max:500',
             'branch'           => 'nullable|string|max:100',
+            'other_branch'     => 'nullable|string|max:100',
             'diksha_taken'     => 'nullable|boolean',
             'diksha_date'      => 'nullable|date',
             'diksha_place'     => 'nullable|string|max:200',
@@ -66,6 +67,13 @@ class BhaktController extends Controller
             $nameHi = LanguageHelper::phoneticEnglishToHindi($rawName);
         }
 
+        $branch = $validated['branch'] ?? null;
+        if (($branch === 'Other' || $branch === 'other') && !empty($request->other_branch)) {
+            $branch = trim($request->other_branch);
+        } elseif ($branch === 'Other' || $branch === 'other') {
+            $branch = 'Other Center';
+        }
+
         $bhakt = Bhakt::create([
             'registration_number' => Bhakt::generateRegistrationNumber(),
             'name'             => $rawName,
@@ -79,7 +87,7 @@ class BhaktController extends Controller
             'district'         => $validated['district'] ?? null,
             'state'            => $validated['state'] ?? null,
             'address'          => $validated['address'] ?? null,
-            'branch'           => $validated['branch'] ?? null,
+            'branch'           => $branch,
             'diksha_taken'     => $request->boolean('diksha_taken'),
             'diksha_date'      => $validated['diksha_date'] ?? null,
             'diksha_place'     => $validated['diksha_place'] ?? null,

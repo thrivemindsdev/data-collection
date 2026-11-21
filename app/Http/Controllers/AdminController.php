@@ -96,7 +96,10 @@ class AdminController extends Controller
 
         $bhakts   = $query->latest()->paginate(15)->withQueryString();
         $states   = Bhakt::whereNotNull('state')->distinct()->orderBy('state')->pluck('state');
-        $branches = Bhakt::whereNotNull('branch')->distinct()->orderBy('branch')->pluck('branch');
+        
+        $defaultBranches = ['Shivreinarayan', 'Vrindavan', 'Raipur', 'Champa', 'Janjgir', 'Varanasi'];
+        $dbBranches = Bhakt::whereNotNull('branch')->distinct()->pluck('branch')->toArray();
+        $branches = collect(array_values(array_unique(array_merge($defaultBranches, $dbBranches))));
 
         return view('admin.bhakts.index', compact('bhakts', 'states', 'branches'));
     }

@@ -99,6 +99,8 @@ class LanguageHelper
         'Shivreinarayan'=> 'शिवरीनारायण',
         'Durg'          => 'दुर्ग',
         'Bhilai'        => 'भिलाई',
+        'Champa'        => 'चांपा',
+        'Janjgir'       => 'जांजगीर',
         'Rajnandgaon'   => 'राजनंदगांव',
         'Korba'         => 'कोरबा',
         'Raigarh'       => 'रायगढ़',
@@ -118,7 +120,12 @@ class LanguageHelper
     protected static array $branchMap = [
         'Shivreinarayan' => 'शिवरीनारायण',
         'Vrindavan'      => 'वृंदावन',
+        'Raipur'         => 'रायपुर',
+        'Champa'         => 'चांपा',
+        'Janjgir'        => 'जांजगीर',
+        'Varanasi'       => 'वाराणसी',
         'Other Center'   => 'अन्य केंद्र',
+        'Other'          => 'अन्य',
     ];
 
     /**
@@ -186,6 +193,13 @@ class LanguageHelper
 
         // Normalize matching
         foreach (self::$branchMap as $en => $hi) {
+            if (strcasecmp($trimmed, $en) === 0 || $trimmed === $hi) {
+                return $isHindi ? $hi : $en;
+            }
+        }
+
+        // Also check place dictionary in case city was specified
+        foreach (self::$placeMap as $en => $hi) {
             if (strcasecmp($trimmed, $en) === 0 || $trimmed === $hi) {
                 return $isHindi ? $hi : $en;
             }
