@@ -174,6 +174,18 @@ class AdminController extends Controller
         return redirect()->route('admin.bhakts.show', $bhakt)->with('success', __('admin.correction_success'));
     }
 
+    // Delete a devotee record
+    public function destroy(Bhakt $bhakt)
+    {
+        $bhakt->delete();
+
+        if (url()->previous() === route('admin.bhakts.show', $bhakt)) {
+            return redirect()->route('admin.bhakts.index')->with('success', __('messages.deleted_successfully'));
+        }
+
+        return back()->with('success', __('messages.deleted_successfully'));
+    }
+
     // Export CSV (Bilingual)
     public function export(Request $request)
     {

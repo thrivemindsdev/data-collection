@@ -115,4 +115,26 @@ class BhaktSystemTest extends TestCase
         $responseHi->assertSee('शिवरीनारायण');
         $responseHi->assertSee('छत्तीसगढ़');
     }
+
+    public function test_admin_can_delete_bhakt_record(): void
+    {
+        $bhakt = Bhakt::create([
+            'name' => 'To Delete Devotee',
+            'mobile' => '9998887776',
+            'registration_number' => 'SAD-REG-2611-99999',
+            'status' => 'pending',
+            'branch' => 'Shivreinarayan',
+        ]);
+
+        $admin = User::first();
+        $this->actingAs($admin);
+
+        // Delete devotee
+        $response = $this->delete('/admin/bhakts/' . $bhakt->id);
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseMissing('bhakts', [
+            'id' => $bhakt->id,
+        ]);
+    }
 }

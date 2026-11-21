@@ -3,10 +3,18 @@
 
 @section('content')
 
-<div class="mb-3">
+<div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
     <a href="{{ route('admin.bhakts.index') }}" class="btn btn-sm btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i>{{ __('messages.back') }}
     </a>
+    <form method="POST" action="{{ route('admin.bhakts.destroy', $bhakt) }}"
+          onsubmit="return confirm('{{ addslashes(__('messages.delete_confirm')) }}');">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-sm btn-outline-danger">
+            <i class="bi bi-trash me-1"></i>{{ __('messages.delete') }}
+        </button>
+    </form>
 </div>
 
 <div class="row g-4">

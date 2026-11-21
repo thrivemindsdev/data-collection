@@ -165,9 +165,19 @@
                                     <span class="badge badge-status-{{ $b->status }}">{{ $b->display_status }}</span>
                                 </td>
                                 <td>
-                                    <a href="{{ route('admin.bhakts.show', $b) }}" class="btn btn-sm btn-saffron">
-                                        {{ __('messages.view') }}
-                                    </a>
+                                    <div class="d-flex gap-1 align-items-center">
+                                        <a href="{{ route('admin.bhakts.show', $b) }}" class="btn btn-sm btn-saffron py-1 px-2">
+                                            <i class="bi bi-eye me-1"></i>{{ __('messages.view') }}
+                                        </a>
+                                        <form method="POST" action="{{ route('admin.bhakts.destroy', $b) }}"
+                                              onsubmit="return confirm('{{ addslashes(__('messages.delete_confirm')) }}');" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2" title="{{ __('messages.delete') }}">
+                                                <i class="bi bi-trash"></i> {{ __('messages.delete') }}
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

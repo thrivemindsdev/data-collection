@@ -26,6 +26,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/bhakts', [AdminController::class, 'index'])->name('bhakts.index');
     Route::get('/bhakts/export', [AdminController::class, 'export'])->name('bhakts.export');
     Route::get('/bhakts/{bhakt}', [AdminController::class, 'show'])->name('bhakts.show');
+    Route::delete('/bhakts/{bhakt}', [AdminController::class, 'destroy'])->name('bhakts.destroy');
     Route::post('/bhakts/{bhakt}/approve', [AdminController::class, 'approve'])->name('bhakts.approve');
     Route::post('/bhakts/{bhakt}/reject', [AdminController::class, 'reject'])->name('bhakts.reject');
     Route::post('/bhakts/{bhakt}/correction', [AdminController::class, 'correction'])->name('bhakts.correction');
