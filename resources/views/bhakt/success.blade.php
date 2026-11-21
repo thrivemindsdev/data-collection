@@ -226,7 +226,12 @@
 
                 {{-- ACTION BUTTONS --}}
                 <div class="d-flex gap-2 mt-4 justify-content-center flex-wrap no-print">
-                    {{-- Share / Save WhatsApp --}}
+                    {{-- 1. Download Receipt as PDF (Direct PDF download on iOS, Android & Desktop) --}}
+                    <a href="{{ route('register.receipt.pdf', $bhakt) }}" class="btn btn-maroon shadow-sm">
+                        <i class="bi bi-file-earmark-pdf-fill me-1"></i>{{ __('messages.download_receipt') }}
+                    </a>
+
+                    {{-- 2. Share on WhatsApp (Single instance) --}}
                     @php
                         $shareText = "ॐ *" . __('messages.ashram_full_name') . "*\n"
                                    . "📋 *" . __('messages.digital_pass_title') . "*\n"
@@ -240,23 +245,7 @@
                         <i class="bi bi-whatsapp me-1"></i>{{ __('messages.share_whatsapp') }}
                     </a>
 
-                    {{-- 1. Print / Save Receipt (Opens official printable receipt in new tab - 100% reliable on every phone & browser) --}}
-                    <a href="{{ route('register.receipt', $bhakt) }}" target="_blank" class="btn btn-maroon shadow-sm">
-                        <i class="bi bi-printer-fill me-1"></i>{{ __('messages.print_slip') }}
-                    </a>
-
-                    {{-- 2. Save Pass Image (Modal with direct save to photos / download) --}}
-                    <button type="button" class="btn btn-outline-secondary shadow-sm" onclick="showPassImageModal();">
-                        <i class="bi bi-image me-1"></i>{{ __('messages.save_receipt') }}
-                    </button>
-
-                    {{-- 3. Share WhatsApp --}}
-                    <a href="https://api.whatsapp.com/send?text={{ urlencode($shareText) }}"
-                       target="_blank" class="btn btn-success shadow-sm">
-                        <i class="bi bi-whatsapp me-1"></i>{{ __('messages.share_whatsapp') }}
-                    </a>
-
-                    {{-- 4. Check Status Link --}}
+                    {{-- 3. Check Status Link --}}
                     <a href="{{ route('status', ['mobile' => $bhakt->mobile]) }}" class="btn btn-outline-dark shadow-sm">
                         <i class="bi bi-search me-1"></i>{{ __('messages.check_status_link') }}
                     </a>
@@ -266,42 +255,6 @@
                     <a href="{{ route('register') }}" class="text-muted small text-decoration-none">
                         <i class="bi bi-plus-circle me-1"></i>{{ __('messages.register_another') }}
                     </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- MODAL FOR SAVING PASS IMAGE (Mobile & Desktop friendly) --}}
-<div class="modal fade" id="passImageModal" tabindex="-1" aria-labelledby="passImageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" style="border: 2px solid var(--gold); border-radius: 14px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, var(--maroon), #5c1414); color: #fff;">
-                <h6 class="modal-title fw-bold" id="passImageModalLabel">
-                    <i class="bi bi-shield-check me-2 text-warning"></i>{{ __('messages.digital_pass_title') }}
-                </h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center p-3">
-                <p class="text-muted small mb-2">
-                    <i class="bi bi-info-circle me-1 text-primary"></i>
-                    <strong>Mobile:</strong> Tap and hold the image below, then choose <em>"Save to Photos"</em> or <em>"Save Image"</em>.
-                </p>
-                <div class="p-2 bg-light rounded border text-center mb-3">
-                    <img id="passModalImg" src="" alt="Pass Receipt" class="img-fluid rounded shadow-sm" style="max-height: 400px; display: none;">
-                    <div id="passImgSpinner" class="py-5">
-                        <div class="spinner-border text-warning" role="status"></div>
-                        <p class="small text-muted mt-2">Generating High-Resolution Pass...</p>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-center gap-2 flex-wrap">
-                    <a id="modalDownloadLink" href="#" download="Receipt_{{ $bhakt->display_reg_number }}.png" class="btn btn-success btn-sm">
-                        <i class="bi bi-download me-1"></i>Download PNG Image
-                    </a>
-                    <a href="{{ route('register.receipt', $bhakt) }}" target="_blank" class="btn btn-maroon btn-sm">
-                        <i class="bi bi-printer me-1"></i>Open Full Printable Slip
-                    </a>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -323,184 +276,6 @@ function copyRegId() {
             if (copyIcon) copyIcon.className = "bi bi-clipboard";
         }, 2500);
     });
-}
-
-function showPassImageModal() {
-    var modalEl = document.getElementById('passImageModal');
-    if (!modalEl) return;
-    var modal = new bootstrap.Modal(modalEl);
-    modal.show();
-
-    var img = document.getElementById('passModalImg');
-    var spinner = document.getElementById('passImgSpinner');
-    var downloadLink = document.getElementById('modalDownloadLink');
-
-    if (img.src && img.src.startsWith('data:image')) {
-        img.style.display = 'inline-block';
-        if (spinner) spinner.style.display = 'none';
-        return;
-    }
-
-    setTimeout(function() {
-        try {
-            var canvas = document.createElement('canvas');
-            canvas.width = 800;
-            canvas.height = 540;
-            var ctx = canvas.getContext('2d');
-
-            var devoteeName = {!! json_encode($bhakt->display_name) !!};
-            var regNumber   = {!! json_encode($bhakt->display_reg_number) !!};
-            var mobile      = "+91 {{ $bhakt->mobile }}";
-            var branch      = {!! json_encode($bhakt->display_branch) !!};
-            var place       = {!! json_encode(implode(', ', array_filter([$bhakt->display_city, $bhakt->display_state])) ?: '—') !!};
-            var ashramTitle = {!! json_encode(__('messages.ashram_full_name')) !!};
-            var passTitle   = {!! json_encode(__('messages.digital_pass_title')) !!};
-            var verified    = {!! json_encode(__('messages.pass_verified') . ' • ' . date('d-M-Y H:i')) !!};
-
-            // Background
-            ctx.fillStyle = '#FFFDF9';
-            ctx.fillRect(0, 0, 800, 540);
-
-            // Outer Gold Border
-            ctx.strokeStyle = '#D4AF37';
-            ctx.lineWidth = 4;
-            drawRoundRect(ctx, 12, 12, 776, 516, 18);
-            ctx.stroke();
-
-            // Inner Gold Accent
-            ctx.strokeStyle = '#E8D29A';
-            ctx.lineWidth = 1;
-            drawRoundRect(ctx, 18, 18, 764, 504, 14);
-            ctx.stroke();
-
-            // Header Maroon Ribbon
-            ctx.fillStyle = '#7B1E1E';
-            drawRoundRect(ctx, 18, 18, 764, 88, [14, 14, 0, 0]);
-            ctx.fill();
-
-            // Ashram Header Text
-            ctx.fillStyle = '#FFFFFF';
-            ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('ॐ  ' + ashramTitle, 400, 52);
-
-            ctx.fillStyle = '#F5D8A0';
-            ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            ctx.fillText('🛡 ' + passTitle, 400, 80);
-
-            // Watermark Om
-            ctx.fillStyle = 'rgba(212, 175, 55, 0.08)';
-            ctx.font = 'bold 180px serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('ॐ', 400, 340);
-
-            // Registration Pass Code Box
-            ctx.fillStyle = '#FFFFFF';
-            drawRoundRect(ctx, 100, 126, 600, 75, 12);
-            ctx.fill();
-            ctx.strokeStyle = '#D4AF37';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([6, 4]);
-            drawRoundRect(ctx, 100, 126, 600, 75, 12);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Registration Number
-            ctx.fillStyle = '#7B1E1E';
-            ctx.font = 'bold 34px "Courier New", monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText(regNumber, 400, 175);
-
-            // Barcode Graphic
-            var barcodeY = 222;
-            var barcodeX = 230;
-            ctx.fillStyle = '#222222';
-            var pattern = [2, 1, 3, 2, 1, 4, 2, 1, 3, 1, 2, 4, 1, 3, 2, 1, 2, 3, 1, 4, 2, 1, 3, 2, 1, 4, 1, 2, 3, 1, 2, 3, 1];
-            var curX = barcodeX;
-            for (var i = 0; i < pattern.length; i++) {
-                ctx.fillRect(curX, barcodeY, pattern[i] * 2, 26);
-                curX += (pattern[i] * 2) + 4;
-            }
-
-            // Devotee Details Panel
-            var startY = 275;
-            ctx.fillStyle = '#FFF8F0';
-            drawRoundRect(ctx, 40, startY, 720, 165, 12);
-            ctx.fill();
-            ctx.strokeStyle = '#E8D5C2';
-            ctx.lineWidth = 1;
-            drawRoundRect(ctx, 40, startY, 720, 165, 12);
-            ctx.stroke();
-
-            // Grid Details
-            ctx.textAlign = 'left';
-
-            // Col 1: Name & Mobile
-            ctx.fillStyle = '#7a6a58';
-            ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            ctx.fillText("{{ __('messages.name') }}:", 70, startY + 38);
-            ctx.fillStyle = '#2c1a0e';
-            ctx.font = 'bold 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            ctx.fillText(devoteeName, 70, startY + 66);
-
-            ctx.fillStyle = '#7a6a58';
-            ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            ctx.fillText("{{ __('messages.mobile') }}:", 70, startY + 110);
-            ctx.fillStyle = '#2c1a0e';
-            ctx.font = 'bold 18px "Courier New", monospace';
-            ctx.fillText(mobile, 70, startY + 138);
-
-            // Col 2: Branch & Location
-            ctx.fillStyle = '#7a6a58';
-            ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            ctx.fillText("{{ __('messages.branch') }}:", 440, startY + 38);
-            ctx.fillStyle = '#2c1a0e';
-            ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            ctx.fillText(branch, 440, startY + 66);
-
-            ctx.fillStyle = '#7a6a58';
-            ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            ctx.fillText("{{ __('messages.state') }}:", 440, startY + 110);
-            ctx.fillStyle = '#2c1a0e';
-            ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            ctx.fillText(place, 440, startY + 138);
-
-            // Verified Footer
-            ctx.fillStyle = '#8c7664';
-            ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(verified, 400, 480);
-
-            var dataUrl = canvas.toDataURL('image/png');
-            img.src = dataUrl;
-            img.style.display = 'inline-block';
-            if (spinner) spinner.style.display = 'none';
-            if (downloadLink) downloadLink.href = dataUrl;
-        } catch(e) {
-            console.error("Canvas error: ", e);
-            window.location.href = "{{ route('register.receipt', $bhakt) }}";
-        }
-    }, 120);
-}
-
-function drawRoundRect(ctx, x, y, width, height, radius) {
-    if (typeof radius === 'undefined') radius = 5;
-    if (typeof radius === 'number') {
-        radius = {tl: radius, tr: radius, br: radius, bl: radius};
-    } else if (Array.isArray(radius)) {
-        radius = {tl: radius[0], tr: radius[1], br: radius[2] || 0, bl: radius[3] || 0};
-    }
-    ctx.beginPath();
-    ctx.moveTo(x + radius.tl, y);
-    ctx.lineTo(x + width - radius.tr, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
-    ctx.lineTo(x + width, y + height - radius.br);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
-    ctx.lineTo(x + radius.bl, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
-    ctx.lineTo(x, y + radius.tl);
-    ctx.quadraticCurveTo(x, y, x + radius.tl, y);
-    ctx.closePath();
 }
 </script>
 @endpush

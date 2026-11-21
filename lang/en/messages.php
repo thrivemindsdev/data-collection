@@ -84,9 +84,9 @@ return [
     'copy_reg_id'           => 'Copy Number',
     'copied'                => 'Copied!',
     'share_whatsapp'        => 'Share / Save on WhatsApp',
-    'print_slip'            => 'Print / Save Receipt',
-    'save_receipt'          => 'Download Pass (Image)',
-    'view_receipt'          => 'View Official Slip',
+    'download_receipt'      => 'Download Receipt',
+    'download_pdf'          => 'Download PDF',
+    'print_slip'            => 'Print Receipt',
     'saving'                => 'Saving...',
     'downloaded'            => 'Saved to Device!',
 

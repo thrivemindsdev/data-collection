@@ -201,4 +201,34 @@ class BhaktSystemTest extends TestCase
         $response->assertSee('+91 9876501234');
         $response->assertSee('Shivreinarayan');
     }
+
+    public function test_download_receipt_pdf_downloads_valid_pdf_file(): void
+    {
+        $bhakt = Bhakt::create([
+            'name' => 'PDF Devotee',
+            'mobile' => '9876509999',
+            'registration_number' => 'SAD-REG-2611-99999',
+            'branch' => 'Janjgir',
+            'state' => 'Chhattisgarh',
+            'status' => 'pending',
+        ]);
+
+        $response = $this->get('/register/receipt/' . $bhakt->id . '/pdf');
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/pdf');
+        $this->assertStringContainsString('Receipt_SAD-REG-2611-99999.pdf', $response->headers->get('Content-Disposition'));
+        $this->assertNotEmpty($response->getContent());
+    }
+
+    public function test_admin_reset_command_creates_or_updates_admin_account(): void
+    {
+        $this->artisan('admin:reset', [
+            'email' => 'admin@ashram.in',
+            'password' => 'Admin@1234',
+        ])->assertExitCode(0);
+
+        $admin = User::where('email', 'admin@ashram.in')->first();
+        $this->assertNotNull($admin);
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('Admin@1234', $admin->password));
+    }
 }

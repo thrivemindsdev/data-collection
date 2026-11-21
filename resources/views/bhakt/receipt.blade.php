@@ -181,6 +181,9 @@
             </span>
         </div>
         <div class="d-flex align-items-center gap-2">
+            <a href="{{ route('register.receipt.pdf', $bhakt) }}" class="btn btn-maroon btn-sm shadow-sm">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i>{{ __('messages.download_pdf') }}
+            </a>
             <button type="button" class="btn btn-success btn-sm shadow-sm" onclick="window.print();">
                 <i class="bi bi-printer-fill me-1"></i>{{ __('messages.print_slip') }}
             </button>

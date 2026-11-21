@@ -14,6 +14,7 @@ Route::get('/', [BhaktController::class, 'create'])->name('register');
 Route::post('/register', [BhaktController::class, 'store'])->name('register.store');
 Route::get('/register/success/{bhakt}', [BhaktController::class, 'success'])->name('register.success');
 Route::get('/register/receipt/{bhakt}', [BhaktController::class, 'receipt'])->name('register.receipt');
+Route::get('/register/receipt/{bhakt}/pdf', [BhaktController::class, 'pdf'])->name('register.receipt.pdf');
 Route::get('/status', [BhaktController::class, 'status'])->name('status');
 
 // Auth Routes

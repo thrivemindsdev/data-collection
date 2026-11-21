@@ -114,6 +114,15 @@ class BhaktController extends Controller
         return view('bhakt.receipt', compact('bhakt'));
     }
 
+    // Download Receipt as PDF
+    public function pdf(Bhakt $bhakt)
+    {
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('bhakt.pdf', compact('bhakt'));
+        $filename = 'Receipt_' . $bhakt->display_reg_number . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
     // Check application status (public)
     public function status(Request $request)
     {
