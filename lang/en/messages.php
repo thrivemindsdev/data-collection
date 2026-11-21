@@ -84,7 +84,10 @@ return [
     'copy_reg_id'           => 'Copy Number',
     'copied'                => 'Copied!',
     'share_whatsapp'        => 'Share / Save on WhatsApp',
-    'print_slip'            => 'Print / Save Receipt',
+    'print_slip'            => 'Print Slip',
+    'save_receipt'          => 'Save / Download Receipt',
+    'saving'                => 'Saving...',
+    'downloaded'            => 'Saved to Device!',
 
     // Success Page
     'submitted'             => 'Registration Submitted Successfully!',

@@ -240,13 +240,18 @@
                         <i class="bi bi-whatsapp me-1"></i>{{ __('messages.share_whatsapp') }}
                     </a>
 
+                    {{-- Save / Download Pass Receipt (Works on all mobile & desktop browsers) --}}
+                    <button type="button" class="btn btn-maroon shadow-sm" onclick="downloadPassReceipt();" id="downloadPassBtn">
+                        <i class="bi bi-file-earmark-arrow-down-fill me-1"></i>{{ __('messages.save_receipt') }}
+                    </button>
+
                     {{-- Print Slip --}}
-                    <button type="button" class="btn btn-outline-secondary shadow-sm" onclick="window.print();">
+                    <button type="button" class="btn btn-outline-secondary shadow-sm" onclick="handlePrintReceipt();">
                         <i class="bi bi-printer me-1"></i>{{ __('messages.print_slip') }}
                     </button>
 
                     {{-- Check Status Link --}}
-                    <a href="{{ route('status', ['mobile' => $bhakt->mobile]) }}" class="btn btn-maroon shadow-sm">
+                    <a href="{{ route('status', ['mobile' => $bhakt->mobile]) }}" class="btn btn-outline-dark shadow-sm">
                         <i class="bi bi-search me-1"></i>{{ __('messages.check_status_link') }}
                     </a>
                 </div>
@@ -276,6 +281,200 @@ function copyRegId() {
             if (copyIcon) copyIcon.className = "bi bi-clipboard";
         }, 2500);
     });
+}
+
+function handlePrintReceipt() {
+    try {
+        window.print();
+    } catch (e) {
+        downloadPassReceipt();
+    }
+}
+
+function downloadPassReceipt() {
+    var btn = document.getElementById('downloadPassBtn');
+    var origHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>' + "{{ __('messages.saving') }}";
+    }
+
+    setTimeout(function() {
+        try {
+            var canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 540;
+            var ctx = canvas.getContext('2d');
+
+            var devoteeName = {!! json_encode($bhakt->display_name) !!};
+            var regNumber   = {!! json_encode($bhakt->display_reg_number) !!};
+            var mobile      = "+91 {{ $bhakt->mobile }}";
+            var branch      = {!! json_encode($bhakt->display_branch) !!};
+            var place       = {!! json_encode(implode(', ', array_filter([$bhakt->display_city, $bhakt->display_state])) ?: '—') !!};
+            var ashramTitle = {!! json_encode(__('messages.ashram_full_name')) !!};
+            var passTitle   = {!! json_encode(__('messages.digital_pass_title')) !!};
+            var verified    = {!! json_encode(__('messages.pass_verified') . ' • ' . date('d-M-Y H:i')) !!};
+
+            // Background
+            ctx.fillStyle = '#FFFDF9';
+            ctx.fillRect(0, 0, 800, 540);
+
+            // Outer Gold Border
+            ctx.strokeStyle = '#D4AF37';
+            ctx.lineWidth = 4;
+            drawRoundRect(ctx, 12, 12, 776, 516, 18);
+            ctx.stroke();
+
+            // Inner Gold Accent
+            ctx.strokeStyle = '#E8D29A';
+            ctx.lineWidth = 1;
+            drawRoundRect(ctx, 18, 18, 764, 504, 14);
+            ctx.stroke();
+
+            // Header Maroon Ribbon
+            ctx.fillStyle = '#7B1E1E';
+            drawRoundRect(ctx, 18, 18, 764, 88, [14, 14, 0, 0]);
+            ctx.fill();
+
+            // Ashram Header Text
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('ॐ  ' + ashramTitle, 400, 52);
+
+            ctx.fillStyle = '#F5D8A0';
+            ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            ctx.fillText('🛡 ' + passTitle, 400, 80);
+
+            // Watermark Om
+            ctx.fillStyle = 'rgba(212, 175, 55, 0.08)';
+            ctx.font = 'bold 180px serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('ॐ', 400, 340);
+
+            // Registration Pass Code Box
+            ctx.fillStyle = '#FFFFFF';
+            drawRoundRect(ctx, 100, 126, 600, 75, 12);
+            ctx.fill();
+            ctx.strokeStyle = '#D4AF37';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([6, 4]);
+            drawRoundRect(ctx, 100, 126, 600, 75, 12);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Registration Number
+            ctx.fillStyle = '#7B1E1E';
+            ctx.font = 'bold 34px "Courier New", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(regNumber, 400, 175);
+
+            // Barcode Graphic
+            var barcodeY = 222;
+            var barcodeX = 230;
+            ctx.fillStyle = '#222222';
+            var pattern = [2, 1, 3, 2, 1, 4, 2, 1, 3, 1, 2, 4, 1, 3, 2, 1, 2, 3, 1, 4, 2, 1, 3, 2, 1, 4, 1, 2, 3, 1, 2, 3, 1];
+            var curX = barcodeX;
+            for (var i = 0; i < pattern.length; i++) {
+                ctx.fillRect(curX, barcodeY, pattern[i] * 2, 26);
+                curX += (pattern[i] * 2) + 4;
+            }
+
+            // Devotee Details Panel
+            var startY = 275;
+            ctx.fillStyle = '#FFF8F0';
+            drawRoundRect(ctx, 40, startY, 720, 165, 12);
+            ctx.fill();
+            ctx.strokeStyle = '#E8D5C2';
+            ctx.lineWidth = 1;
+            drawRoundRect(ctx, 40, startY, 720, 165, 12);
+            ctx.stroke();
+
+            // Grid Details
+            ctx.textAlign = 'left';
+
+            // Col 1: Name & Mobile
+            ctx.fillStyle = '#7a6a58';
+            ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            ctx.fillText("{{ __('messages.name') }}:", 70, startY + 38);
+            ctx.fillStyle = '#2c1a0e';
+            ctx.font = 'bold 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            ctx.fillText(devoteeName, 70, startY + 66);
+
+            ctx.fillStyle = '#7a6a58';
+            ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            ctx.fillText("{{ __('messages.mobile') }}:", 70, startY + 110);
+            ctx.fillStyle = '#2c1a0e';
+            ctx.font = 'bold 18px "Courier New", monospace';
+            ctx.fillText(mobile, 70, startY + 138);
+
+            // Col 2: Branch & Location
+            ctx.fillStyle = '#7a6a58';
+            ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            ctx.fillText("{{ __('messages.branch') }}:", 440, startY + 38);
+            ctx.fillStyle = '#2c1a0e';
+            ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            ctx.fillText(branch, 440, startY + 66);
+
+            ctx.fillStyle = '#7a6a58';
+            ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            ctx.fillText("{{ __('messages.state') }}:", 440, startY + 110);
+            ctx.fillStyle = '#2c1a0e';
+            ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            ctx.fillText(place, 440, startY + 138);
+
+            // Verified Footer
+            ctx.fillStyle = '#8c7664';
+            ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(verified, 400, 480);
+            ctx.fillText("Status Tracking: " + window.location.origin + "/status", 400, 504);
+
+            // Convert to download
+            var dataUrl = canvas.toDataURL('image/png');
+            var a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = 'Receipt_' + regNumber + '.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-check2-circle me-1"></i>' + "{{ __('messages.downloaded') }}";
+                setTimeout(function() {
+                    btn.innerHTML = origHtml;
+                }, 3500);
+            }
+        } catch (e) {
+            console.error("Receipt generation error:", e);
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+            window.print();
+        }
+    }, 250);
+}
+
+function drawRoundRect(ctx, x, y, width, height, radius) {
+    if (typeof radius === 'undefined') radius = 5;
+    if (typeof radius === 'number') {
+        radius = {tl: radius, tr: radius, br: radius, bl: radius};
+    } else if (Array.isArray(radius)) {
+        radius = {tl: radius[0], tr: radius[1], br: radius[2] || 0, bl: radius[3] || 0};
+    }
+    ctx.beginPath();
+    ctx.moveTo(x + radius.tl, y);
+    ctx.lineTo(x + width - radius.tr, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+    ctx.lineTo(x + width, y + height - radius.br);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+    ctx.lineTo(x + radius.bl, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+    ctx.lineTo(x, y + radius.tl);
+    ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+    ctx.closePath();
 }
 </script>
 @endpush
