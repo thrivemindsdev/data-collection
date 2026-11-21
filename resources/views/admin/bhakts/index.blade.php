@@ -215,7 +215,10 @@
                                 {{ $b->display_status }}
                             </span>
                         </td>
-                        <td class="small text-muted">{{ $b->created_at->format('d M Y') }}</td>
+                        <td class="small text-muted">
+                            <div>{{ $b->created_at->format('d M Y') }}</div>
+                            <div class="text-secondary" style="font-size:0.75rem;">{{ $b->created_at->format('h:i A') }}</div>
+                        </td>
                         <td>
                             <div class="d-flex gap-1 align-items-center">
                                 <a href="{{ route('admin.bhakts.show', $b) }}" class="btn btn-sm btn-saffron py-1 px-2">
