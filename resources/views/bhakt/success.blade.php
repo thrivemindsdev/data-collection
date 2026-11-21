@@ -56,15 +56,22 @@
     margin-top: 16px;
     text-align: center;
 }
+.ashram-digital-pass > * {
+    position: relative;
+    z-index: 2;
+}
 .pass-watermark {
     position: absolute;
-    right: -20px;
-    bottom: -30px;
-    font-size: 9rem;
-    color: rgba(212, 175, 55, 0.07);
+    right: -10px;
+    bottom: -25px;
+    font-size: 7.5rem;
+    font-family: 'Yatra One', 'Noto Serif Devanagari', 'Segoe UI', serif;
+    color: #D4AF37;
+    opacity: 0.08;
     line-height: 1;
     pointer-events: none;
     user-select: none;
+    z-index: 1;
 }
 .pass-header-ribbon {
     background: linear-gradient(135deg, var(--maroon) 0%, #5c1414 100%);
@@ -79,16 +86,18 @@
 }
 .pass-code-display {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 1.85rem;
+    font-size: clamp(1.2rem, 4.5vw, 1.85rem);
     font-weight: 800;
-    letter-spacing: 2.5px;
+    letter-spacing: 1.5px;
     color: var(--maroon);
     background: #fff;
-    padding: 8px 18px;
+    padding: 8px 16px;
     border-radius: 8px;
     display: inline-block;
     border: 1px dashed #d4af37;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    max-width: 100%;
+    word-break: break-all;
 }
 .pass-barcode {
     height: 28px;
@@ -103,7 +112,22 @@
         transparent 11px, transparent 15px
     );
     width: 220px;
+    max-width: 90%;
     opacity: 0.7;
+}
+
+@media (max-width: 576px) {
+    .pass-code-display {
+        font-size: 1.25rem;
+        letter-spacing: 1px;
+        padding: 6px 10px;
+    }
+    .pass-watermark {
+        font-size: 5rem;
+        right: -5px;
+        bottom: -15px;
+        opacity: 0.06;
+    }
 }
 
 @media print {
@@ -133,7 +157,7 @@
 
                 {{-- PRESTIGIOUS DIGITAL REGISTRATION PASS --}}
                 <div class="ashram-digital-pass">
-                    <div class="pass-watermark">🕉</div>
+                    <div class="pass-watermark" aria-hidden="true">ॐ</div>
                     <div>
                         <span class="pass-header-ribbon">
                             <i class="bi bi-shield-check me-1"></i>{{ __('messages.digital_pass_title') }}
@@ -204,7 +228,7 @@
                 <div class="d-flex gap-2 mt-4 justify-content-center flex-wrap no-print">
                     {{-- Share / Save WhatsApp --}}
                     @php
-                        $shareText = "🕉 *" . __('messages.ashram_full_name') . "*\n"
+                        $shareText = "ॐ *" . __('messages.ashram_full_name') . "*\n"
                                    . "📋 *" . __('messages.digital_pass_title') . "*\n"
                                    . "• Name: " . $bhakt->display_name . "\n"
                                    . "• Pass No: " . $bhakt->display_reg_number . "\n"

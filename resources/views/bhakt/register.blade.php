@@ -22,7 +22,7 @@
                 <span>
                     <i class="bi bi-person-plus-fill me-2"></i>{{ __('messages.bhakt_registration') }}
                 </span>
-                <small class="opacity-75">🕉 {{ __('messages.ashram_name') }}</small>
+                <small class="opacity-75">ॐ {{ __('messages.ashram_name') }}</small>
             </div>
             <div class="card-body p-4">
 

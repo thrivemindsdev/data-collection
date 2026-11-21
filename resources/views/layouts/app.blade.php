@@ -40,6 +40,22 @@
             font-size: 1.15rem;
             letter-spacing: 0.5px;
         }
+        .ashram-logo-emblem {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #FF6B00 0%, #D4AF37 100%);
+            color: #fff !important;
+            font-size: 1.35rem;
+            font-weight: 700;
+            line-height: 1;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            flex-shrink: 0;
+            user-select: none;
+        }
         .navbar-ashram .navbar-brand small {
             color: #f5d8a0;
             font-size: 0.72rem;
@@ -322,7 +338,7 @@
     <div class="sacred-spinner-box">
         <div class="sacred-ring-outer"></div>
         <div class="sacred-ring"></div>
-        <div class="sacred-om-inner">🕉</div>
+        <div class="sacred-om-inner">ॐ</div>
     </div>
     <h4 class="fw-bold mb-2" style="color:var(--gold); font-size:1.35rem;" id="loaderTitle">
         {{ __('messages.loader_title') }}
@@ -339,7 +355,7 @@
 <nav class="navbar navbar-expand-lg navbar-ashram sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('register') }}">
-            <span style="font-size:1.4rem;">🕉</span>
+            <span class="ashram-logo-emblem">ॐ</span>
             <div>
                 <span>{{ __('messages.ashram_name') }}</span>
                 <small>{{ __('messages.tagline') }}</small>
@@ -409,7 +425,7 @@
 <!-- OM BANNER (public pages) -->
 @hasSection('show_banner')
 <div class="om-banner">
-    <div class="om-symbol">🕉</div>
+    <div class="om-symbol">ॐ</div>
     <h1>{{ __('messages.ashram_full_name') }}</h1>
     <p>{{ __('messages.tagline') }}</p>
 </div>
@@ -437,7 +453,7 @@
 </main>
 
 <footer>
-    🕉 {{ __('messages.ashram_full_name') }} &nbsp;|&nbsp; {{ __('messages.tagline') }} &nbsp;|&nbsp;
+    ॐ {{ __('messages.ashram_full_name') }} &nbsp;|&nbsp; {{ __('messages.tagline') }} &nbsp;|&nbsp;
     &copy; {{ date('Y') }}
 </footer>
 

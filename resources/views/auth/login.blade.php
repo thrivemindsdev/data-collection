@@ -10,7 +10,7 @@
             </div>
             <div class="card-body p-4">
                 <div class="text-center mb-3">
-                    <div style="font-size:2.5rem;">🕉</div>
+                    <div class="ashram-logo-emblem mx-auto mb-2" style="width:58px; height:58px; font-size:2.2rem; border-radius:14px;">ॐ</div>
                     <p class="text-muted small">{{ __('messages.ashram_name') }} — {{ __('messages.staff_role') }} {{ __('messages.login') }}</p>
                 </div>
 
